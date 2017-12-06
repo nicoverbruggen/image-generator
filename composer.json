@@ -1,0 +1,21 @@
+{
+    "name": "nicoverbruggen/image-generator",
+    "description": "Generate placeholder images with a specific size, color and text (optional).",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nico Verbruggen",
+            "email": "nico.verb@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "NicoVerbruggen\\ImageGenerator\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.0",
+        "ext-gd" : ">=7.0"
+    }
+}
