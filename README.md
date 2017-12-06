@@ -15,9 +15,9 @@ Make sure you require this package in your composer.json:
 
 See [the example source file](example.php) that is used to generate an image. You can generate the following examples:
 
-![An avatar](examples/avatar.png)
 ![The barebones example](examples/barebones.png)
 ![A multiline example](examples/multiline.png)
+![An avatar](examples/avatar.png)
 
 Please note that for testing purposes, I used Roboto Black as the TrueType font. This font is not included in this repository.
 
