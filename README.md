@@ -1,4 +1,4 @@
-# Placeholder Image Generator
+# Image Generator
 
 This package is intended to be used for quickly generating placeholder images with a specific size, color and text.
 
@@ -13,13 +13,15 @@ Make sure you require this package in your composer.json:
 
     composer require nicoverbruggen/image-generator
 
-See [the example source file](example.php) that is used to generate an image. You can generate the following examples:
+See [the example source file](examples/saved.php) that is used to generate and save the sample images. You can generate the following examples:
 
 ![The barebones example](examples/barebones.png)
 ![A multiline example](examples/multiline.png)
 ![An avatar](examples/avatar.png)
 
-Please note that for testing purposes, I used Roboto Black as the TrueType font. This font is not included in this repository.
+Please note that for testing purposes, I used Roboto Black as the TrueType font. (This font is not included in this repository.)
+
+You can also check out [the other source file](examples/direct.php). You can point your browser directly at this file (assuming you're running a PHP server, of course) and it will directly return a file since the path is set to `null`.
 
 ## Notes
 
