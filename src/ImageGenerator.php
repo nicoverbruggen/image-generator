@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @author Nico Verbruggen
- * @copyright 2017 Nico Verbruggen
- * @link https://nicoverbruggen.be
- */
 
 namespace NicoVerbruggen\ImageGenerator;
 
@@ -13,65 +8,22 @@ use NicoVerbruggen\ImageGenerator\Helpers\ColorHelper;
 
 class ImageGenerator
 {
-    public function __construct($config = [])
-    {
-        // The following properties can be set when this object is constructed.
-        $allowed = [
-            "targetSize",
-            "textColorHex",
-            "backgroundColorHex",
-            "pathToFont",
-            "fontSize",
-            "fallbackFontSize"
-        ];
-        foreach ($allowed as $allowedProperty) {
-            if (array_key_exists($allowedProperty, $config)) {
-                $this->{$allowedProperty} = $config[$allowedProperty];
-            }
-        }
-    }
-
     /**
-     * The default target size for generated images.
-     * @var string
+     * @param string $targetSize: The target size for generated images.
+     * @param string $textColorHex: The default text color for generated images. If set to null, will result in the best contrast color to the random color.
+     * @param string $backgroundColorHex: The default background color for generated images. If set to null, will generate a random color.
+     * @param null $fontPath: Path to the font that needs to be used to render the text on the image. Must be a TrueType font (.ttf) for this to work.
+     * @param int $fontSize: The font size to be used when a TrueType font is used. Also used to calculate the line height.
+     * @param int $fallbackFontSize: Can be 1, 2, 3, 4, 5 for built-in fonts in latin2 encoding (where higher numbers corresponding to larger fonts).
      */
-    public $targetSize = "200x200";
-
-    /**
-     * The default text color for generated images.
-     * If set to null, will result in the best contrast color to the random color.
-     * @var string
-     */
-    public $textColorHex = "#333";
-
-    /**
-     * The default background color for generated images.
-     * If set to null, will result in a random color.
-     * @var string
-     */
-    public $backgroundColorHex = "#EEE";
-
-    /**
-     * Path to the font that needs to be used to render the text on the image.
-     * Must be a TrueType font (.ttf) for this to work.
-     *
-     * @var null|string
-     */
-    public $pathToFont = null;
-
-    /**
-     * The font size to be used when a TrueType font is used.
-     * Also used to calculate line height in case of multiple lines.
-     * @var int
-     */
-    public $fontSize = 12;
-
-    /**
-     * Can be 1, 2, 3, 4, 5 for built-in fonts in latin2 encoding (where higher numbers corresponding to larger fonts).
-     *
-     * @var int
-     */
-    public $fallbackFontSize = 5;
+    public function __construct(
+        public $targetSize = "200x200",
+        public $textColorHex = "#333",
+        public $backgroundColorHex = "#EEE",
+        public $fontPath = null,
+        public $fontSize = 12,
+        public $fallbackFontSize = 5
+    ) {}
 
     /**
      * Render or save a placeholder image. (Will always be a PNG.)
@@ -118,21 +70,23 @@ class ImageGenerator
         $randomColor = ColorHelper::randomHex();
 
         // Determine which background + foreground (text) color needs to be used
-        $bgColor = !empty($bgHex) ? $bgHex : $randomColor;
-        $fgColor = !empty($fgHex) ? $fgHex : ColorHelper::contrastColor($bgHex);
+        $bgColor = ! empty($bgHex) ? $bgHex : $randomColor;
+        $fgColor = ! empty($fgHex) ? $fgHex : ColorHelper::contrastColor($bgHex);
 
         if ($text == "") {
             $text = $targetSize;
         }
 
-        // Allocate both the background + foreground (text) color
-        $allocatedBgColor = HexConverter::allocate($imageResource, $bgColor);
+        // Merely allocating the color is enough for the background
+        HexConverter::allocate($imageResource, $bgColor);
+
+        // We'll need to use the foreground color later, so assign it to a variable
         $allocatedFgColor = HexConverter::allocate($imageResource, $fgColor);
 
-        if ($this->pathToFont !== null && file_exists($this->pathToFont)) {
+        if ($this->fontPath !== null && file_exists($this->fontPath)) {
             // Use the TrueType font that was referenced.
             // Generate text
-            $font = $this->pathToFont;
+            $font = $this->fontPath;
             $size = $this->fontSize;
 
             // Get Bounding Box Size

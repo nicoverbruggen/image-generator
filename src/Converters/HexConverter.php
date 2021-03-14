@@ -11,9 +11,9 @@ class HexConverter
      *
      * @param $resource
      * @param $hex
-     * @return int
+     * @return false|int
      */
-    public static function allocate($resource, $hex)
+    public static function allocate($resource, $hex): false|int
     {
         $rgbArray = self::toRgbArray($hex);
         return imagecolorallocate($resource, $rgbArray['r'], $rgbArray['g'], $rgbArray['b']);
@@ -23,10 +23,12 @@ class HexConverter
      * Converts a hex color string to an array (r: int, g: int, b: int).
      * This array can then be used if you need rgb values.
      *
+     * Returns false if the hex cannot be converted (e.g. invalid length).
+     *
      * @param $hex
      * @return array|bool
      */
-    public static function toRgbArray($hex)
+    public static function toRgbArray($hex): array|bool
     {
         $hex = preg_replace("/[^abcdef0-9]/i", "", $hex);
         if (strlen($hex) == 6) {
@@ -34,14 +36,14 @@ class HexConverter
             return [
                 "r" => hexdec($r),
                 "g" => hexdec($g),
-                "b" => hexdec($b)
+                "b" => hexdec($b),
             ];
         } elseif (strlen($hex) == 3) {
             list($r, $g, $b) = array($hex[0] . $hex[0], $hex[1] . $hex[1], $hex[2] . $hex[2]);
             return [
                 "r" => hexdec($r),
                 "g" => hexdec($g),
-                "b" => hexdec($b)
+                "b" => hexdec($b),
             ];
         }
         return false;

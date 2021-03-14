@@ -30,17 +30,17 @@ $generator->makePlaceholderImage(
 */
 
 // Create a new instance of ImageGenerator
-$generator = new ImageGenerator([
+$generator = new ImageGenerator(
     // Decide on a target size for your image
-    'targetSize' => "200x200",
+    targetSize: "200x200",
     // Fun fact: if you set null for these, you'll get a random color for each generated placeholder!
     // You can also specify a specific hex color. ("#EEE" or "#EEEEEE" are both accepted)
-    'textColorHex' => null,
-    'backgroundColorHex' => null,
+    textColorHex: null,
+    backgroundColorHex: null,
     // Let's point to a font. If it can't be found, it'll use a fallback (built-in to GD)
-    'pathToFont' => __DIR__ . "/Roboto-Black.ttf",
-    'fontSize' => 20
-]);
+    fontPath: "/System/Library/Fonts/Supplemental/Arial.ttf",
+    fontSize: 20
+);
 
 // We'll do a multiline message here
 $generator->makePlaceholderImage(
