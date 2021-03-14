@@ -2,8 +2,6 @@
 
 This package is intended to be used for quickly generating placeholder images with a specific size, color and text.
 
-Now that PHP 8.0 supports named arguments, I've updated this package.
-
 ## Requirements
 
 * PHP 8.0 or higher

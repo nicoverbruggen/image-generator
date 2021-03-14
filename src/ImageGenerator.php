@@ -26,7 +26,8 @@ class ImageGenerator
     ) {}
 
     /**
-     * Render or save a placeholder image. (Will always be a PNG.)
+     * Generates an image; directly renders or saves a placeholder image.
+     * This will always be PNG.
      *
      * @param string $text: The text that should be rendered on the placeholder.
      * If left empty (""), will render the default size of the image.
@@ -49,7 +50,7 @@ class ImageGenerator
      *
      * @return bool
      */
-    public function makePlaceholderImage($text = "", $path = null, $size = null, $bgHex = null, $fgHex = null)
+    public function generate($text = "", $path = null, $size = null, $bgHex = null, $fgHex = null): bool
     {
         // The target size is either the one set in the class or the override
         $targetSize = empty($size) ? $this->targetSize : $size;
@@ -149,5 +150,14 @@ class ImageGenerator
             imagepng($imageResource, $path);
             return true;
         }
+    }
+
+    /**
+     * @deprecated: Use `generate` instead.
+     * @return bool
+     */
+    public function makePlaceholderImage($text = "", $path = null, $size = null, $bgHex = null, $fgHex = null): bool
+    {
+        return $this->makePlaceholderImage($text, $path, $size, $bgHex, $fgHex);
     }
 }
