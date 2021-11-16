@@ -134,8 +134,8 @@ class ImageGenerator
             imagestring(
                 $imageResource,
                 $fontSize,
-                $x,
-                $y,
+                (int) $x,
+                (int) $y,
                 $text,
                 $allocatedFgColor
             );

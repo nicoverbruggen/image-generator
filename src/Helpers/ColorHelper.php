@@ -26,6 +26,10 @@ class ColorHelper
      */
     public static function contrastColor($hex): string
     {
+        if ($hex == null) {
+            $hex = "#000000";
+        }
+
         // Remove the # to avoid errors
         $hex = str_replace('#', '', $hex);
 
