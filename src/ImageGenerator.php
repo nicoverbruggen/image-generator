@@ -102,39 +102,8 @@ class ImageGenerator
         $allocatedFgColor = HexConverter::allocate($imageResource, $fgColor);
 
         if ($this->fontPath !== null && file_exists($this->fontPath)) {
-            $font = $this->fontPath;
-            $size = $this->fontSize;
-
-            // Get the bounding box size
-            $textBox = imagettfbbox($size, 0, $font, $text);
-
-            // Find the outer X and Y values (min and max) and use them to calculate
-            // just how wide and high the text box is!
-            $xMax = max([$textBox[0], $textBox[2], $textBox[4], $textBox[6]]);
-            $xMin = min([$textBox[0], $textBox[2], $textBox[4], $textBox[6]]);
-            $textWidth = abs($xMax) - abs($xMin);
-
-            $yMax = max([$textBox[1], $textBox[3], $textBox[5], $textBox[7]]);
-            $yMin = min([$textBox[1], $textBox[3], $textBox[5], $textBox[7]]);
-            $textHeight = abs($yMax) - abs($yMin);
-
-            // Calculate coordinates of the text
-            $x = ((imagesx($imageResource) / 2) - ($textWidth / 2));
-            $y = ((imagesy($imageResource) / 2) - ($textHeight / 2));
-
-            imagettftext(
-                $imageResource,
-                $size,
-                0,
-                (int) $x,
-                (int) $y,
-                $allocatedFgColor,
-                $font,
-                $text
-            );
+            $this->generateTrueTypeImage($size, $text, $imageResource, $allocatedFgColor);
         } else {
-            // The fallback font will be used!
-            // Determine the size of the font and the expected size of the text that will be rendered.
             $this->generateFallbackImage($text, $imageResource, $allocatedFgColor);
         }
 
@@ -181,6 +150,47 @@ class ImageGenerator
             (int)$y,
             $text,
             $allocatedFgColor,
+        );
+    }
+
+    /**
+     * @param int $size
+     * @param string $text
+     * @param \GdImage $imageResource
+     * @param int $allocatedFgColor
+     * @return void
+     */
+    private function generateTrueTypeImage(int $size, string $text, \GdImage $imageResource, int $allocatedFgColor): void
+    {
+        $font = $this->fontPath;
+        $size = $this->fontSize;
+
+        // Get the bounding box size
+        $textBox = imagettfbbox($size, 0, $font, $text);
+
+        // Find the outer X and Y values (min and max) and use them to calculate
+        // just how wide and high the text box is!
+        $xMax = max([$textBox[0], $textBox[2], $textBox[4], $textBox[6]]);
+        $xMin = min([$textBox[0], $textBox[2], $textBox[4], $textBox[6]]);
+        $textWidth = abs($xMax) - abs($xMin);
+
+        $yMax = max([$textBox[1], $textBox[3], $textBox[5], $textBox[7]]);
+        $yMin = min([$textBox[1], $textBox[3], $textBox[5], $textBox[7]]);
+        $textHeight = abs($yMax) - abs($yMin);
+
+        // Calculate coordinates of the text
+        $x = ((imagesx($imageResource) / 2) - ($textWidth / 2));
+        $y = ((imagesy($imageResource) / 2) - ($textHeight / 2));
+
+        imagettftext(
+            $imageResource,
+            $size,
+            0,
+            (int)$x,
+            (int)$y,
+            $allocatedFgColor,
+            $font,
+            $text
         );
     }
 }

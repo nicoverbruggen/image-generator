@@ -76,12 +76,21 @@ You can then link to the domain you're using to host these placeholders. For exa
     <img src="https://image-generator.test/?size=400x400&background_color=333&text_color=FFF" alt="Placeholder">
 </div>
 ```
-
 ## Notes
 
-If you do not supply a TrueType font path: 
+If you do not supply a TrueType font path:
 * you will be limited in font size options (1 through 5)
 * you will not be able to render multiline text
+
+## Upgrade guide
+
+### v2 to v3:
+
+In `ImageGenerator`, `makePlaceholderImage()` has been removed. You need to replace all usages of it with `generate()`.
+
+### v3 to v4:
+
+In `ImageGenerator`, `generate()`'s `path` parameter has been replaced with `output`. It works the same way, but you have more options for this parameter now, in particular `base64` is now a valid value for that parameter.
 
 ## Tests
 
