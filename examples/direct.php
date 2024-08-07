@@ -15,4 +15,4 @@ $generator = new ImageGenerator(
     backgroundColorHex: "#AFB"
 );
 
-$generator->generate("");
+$generator->generate();

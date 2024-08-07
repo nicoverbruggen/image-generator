@@ -8,48 +8,66 @@ use NicoVerbruggen\ImageGenerator\Helpers\ColorHelper;
 class ImageGenerator
 {
     /**
-     * @param string $targetSize: The target size for generated images.
-     * @param string $textColorHex: The default text color for generated images. If set to null, will result in the best contrast color to the random color.
-     * @param string $backgroundColorHex: The default background color for generated images. If set to null, will generate a random color.
-     * @param null $fontPath: Path to the font that needs to be used to render the text on the image. Must be a TrueType font (.ttf) for this to work.
-     * @param int $fontSize: The font size to be used when a TrueType font is used. Also used to calculate the line height.
-     * @param int $fallbackFontSize: Can be 1, 2, 3, 4, 5 for built-in fonts in latin2 encoding (where higher numbers corresponding to larger fonts).
+     * @param string $targetSize The target size for generated images.
+     * @param string $textColorHex The default text color for generated images.
+     * If set to null, will result in the best contrast color to the random color.
+     * @param string $backgroundColorHex The default background color for generated images.
+     * If set to null, will generate a random color.
+     * @param string|null $fontPath Path to the font that needs to be used to render the text on the image.
+     * Must be a TrueType font (.ttf) for this to work.
+     * @param int $fontSize The font size to be used when a TrueType font is used.
+     * Also used to calculate the line height.
+     * @param int $fallbackFontSize Can be 1, 2, 3, 4, 5 for built-in fonts in latin2 encoding.
+     * Higher numbers correspond to larger fonts. If the size is invalid, it will be reset to 3.
      */
     public function __construct(
-        public $targetSize = "200x200",
-        public $textColorHex = "#333",
-        public $backgroundColorHex = "#EEE",
-        public $fontPath = null,
-        public $fontSize = 12,
-        public $fallbackFontSize = 5
-    ) {}
+        public string $targetSize = "200x200",
+        public string $textColorHex = "#333",
+        public string $backgroundColorHex = "#EEE",
+        public string|null $fontPath = null,
+        public int $fontSize = 12,
+        public int $fallbackFontSize = 5
+    ) {
+        if ($this->fallbackFontSize < 1 || $this->fallbackFontSize > 5) {
+            $this->fallbackFontSize = 3;
+        }
+    }
 
     /**
      * Generates an image; directly renders or saves a placeholder image.
      * This will always be PNG.
      *
-     * @param string $text: The text that should be rendered on the placeholder.
+     * @param string $text The text that should be rendered on the placeholder.
      * If left empty (""), will render the default size of the image.
      * If null, won't render any text.
      *
-     * @param null|string $path: The path where the image needs to be stored.
+     * @param string|null $output
+     * The output destination.
+     * The path where the image needs to be stored.
      * If null will directly output the image stream to the buffer.
+     * If `base64`, a `base64` representation will be returned.
      *
-     * @param null|string $size: The target size of the image that will be rendered.
+     * @param string|null $size The target size of the image that will be rendered.
      * For example: "100x100" is a valid size.
      * This value, if set, replaces the default value set in the renderer.
      *
-     * @param null $bgHex: The background color for the image.
+     * @param string|null $bgHex The background color for the image.
      * Must be a string with a hex value. For example: "EEE" and "#EEE" are valid.
      * This value, if set, replaces the default value set in the renderer.
      *
-     * @param null $fgHex: The foreground color for the text, if applicable.
+     * @param string|null $fgHex The foreground color for the text, if applicable.
      * Must be a string with a hex value. For example: "EEE" and "#EEE" are valid.
      * This value, if set, replaces the default value set in the renderer.
      *
      * @return bool
      */
-    public function generate($text = "", $path = null, $size = null, $bgHex = null, $fgHex = null): bool
+    public function generate(
+        string $text = "",
+        ?string $output = null,
+        ?string $size = null,
+        ?string $bgHex = null,
+        ?string $fgHex = null
+    ): bool|string
     {
         // The target size is either the one set in the class or the override
         $targetSize = empty($size) ? $this->targetSize : $size;
@@ -73,7 +91,7 @@ class ImageGenerator
         $bgColor = ! empty($bgHex) ? $bgHex : $randomColor;
         $fgColor = ! empty($fgHex) ? $fgHex : ColorHelper::contrastColor($bgHex);
 
-        if ($text == "") {
+        if ($text === "") {
             $text = $targetSize;
         }
 
@@ -84,12 +102,10 @@ class ImageGenerator
         $allocatedFgColor = HexConverter::allocate($imageResource, $fgColor);
 
         if ($this->fontPath !== null && file_exists($this->fontPath)) {
-            // Use the TrueType font that was referenced.
-            // Generate text
             $font = $this->fontPath;
             $size = $this->fontSize;
 
-            // Get Bounding Box Size
+            // Get the bounding box size
             $textBox = imagettfbbox($size, 0, $font, $text);
 
             // Find the outer X and Y values (min and max) and use them to calculate
@@ -119,35 +135,52 @@ class ImageGenerator
         } else {
             // The fallback font will be used!
             // Determine the size of the font and the expected size of the text that will be rendered.
-            $fontSize = $this->fallbackFontSize;
-            $fontWidth  = imagefontwidth($fontSize);
-            $fontHeight = imagefontwidth($fontSize);
-            $length = strlen($text);
-            $textWidth = $length * $fontWidth;
-
-            // Center the text in the image
-            $x = (imagesx($imageResource) - $textWidth) / 2;
-            $y = (imagesy($imageResource) - $fontHeight) / 2;
-
-            // Adds the plain text string to the image
-            imagestring(
-                $imageResource,
-                $fontSize,
-                (int) $x,
-                (int) $y,
-                $text,
-                $allocatedFgColor
-            );
+            $this->generateFallbackImage($text, $imageResource, $allocatedFgColor);
         }
 
-        if ($path === null) {
+        if ($output === null) {
             ob_clean();
             header('Content-type: image/png');
-            echo imagepng($imageResource, null);
+            echo imagepng($imageResource);
             exit;
+        } else if ($output === 'base64') {
+            ob_start();
+            imagepng($imageResource, null);
+            $data = ob_get_contents();
+            ob_end_clean();
+            return 'data:image/png;base64,' . base64_encode($data);
         }
+
+        $path = $output;
 
         imagepng($imageResource, $path);
         return true;
+    }
+
+    private function generateFallbackImage(
+        string $text,
+        \GdImage $imageResource,
+        int $allocatedFgColor
+    ): void
+    {
+        $fontSize = $this->fallbackFontSize;
+        $fontWidth = imagefontwidth($fontSize);
+        $fontHeight = imagefontwidth($fontSize);
+        $length = strlen($text);
+        $textWidth = $length * $fontWidth;
+
+        // Center the text in the image
+        $x = (imagesx($imageResource) - $textWidth) / 2;
+        $y = (imagesy($imageResource) - $fontHeight) / 2;
+
+        // Adds the plain text string to the image
+        imagestring(
+            $imageResource,
+            $fontSize,
+            (int)$x,
+            (int)$y,
+            $text,
+            $allocatedFgColor,
+        );
     }
 }

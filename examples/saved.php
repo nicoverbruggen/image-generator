@@ -16,7 +16,7 @@ use NicoVerbruggen\ImageGenerator\ImageGenerator;
 // Let's use a barebones generator first
 $generator = new ImageGenerator();
 $generator->generate(
-    path: __DIR__ . "/image_example_barebones.png"
+    output: __DIR__ . "/image_example_barebones.png"
 );
 
 /*
@@ -44,7 +44,7 @@ $generator = new ImageGenerator(
 // We'll do a multiline message here
 $generator->generate(
     text: "My\nname\nis\nBond.", // The text that will be added to the image
-    path: __DIR__ . "/image_example.png" // The path where the image will be saved
+    output: __DIR__ . "/image_example.png" // The path where the image will be saved
 );
 
 // Generate a makePlaceholderImage image, for example for an avatar with initials
@@ -52,5 +52,5 @@ $generator->generate(
 $generator->fontSize = 90;
 $generator->generate(
     text: "NV",
-    path: __DIR__ . "/image_example_avatar.png"
+    output: __DIR__ . "/image_example_avatar.png"
 );

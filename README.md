@@ -21,13 +21,67 @@ See [the example source file](examples/saved.php) that is used to generate and s
 
 Please note that for testing purposes, I used Roboto Black as the TrueType font. (This font is not included in this repository.)
 
+Here's a few examples of what you can do with this package:
+
+### Save images to a path
+
+```php
+use NicoVerbruggen\ImageGenerator\ImageGenerator;
+
+(new ImageGenerator())->generate(output: __DIR__ . "/image_example.png", size: '200x200');
+```
+
+### Generate `base64` encoded images inline
+
+In addition to saving placeholder images to 
+
+```php
+use NicoVerbruggen\ImageGenerator\ImageGenerator;
+
+$output = (new ImageGenerator())->generate(output: 'base64', size: '200x200');
+
+echo "<img src='{$output}' alt='Placeholder image'>";
+```
+
+A useful use case may be achieved after declare your own helper, like so:
+
+```php
+function placeholder_image(string $size = '500x500'): string {
+    return (new ImageGenerator())->generate(output: 'base64', size: $size);
+}
+```
+
+This use case can be useful when used in combination with frameworks like Laravel or Symfony:
+
+```bladehtml
+<div>
+    <h3>Item</h3>
+    <img src="{{ placeholder_image('200x200') }}" alt="Placeholder">
+</div>
+```
+
+### Directly output images
+
 You can also check out [the other source file](examples/direct.php). You can point your browser directly at this file (assuming you're running a PHP server, of course) and it will directly return a file since the path is set to `null`.
+
+### Server mode
+
+You can also point your PHP installation's webroot to the `server` directory, and generate images via URL. The `size` parameter is used to size the placeholder images.
+
+You can then link to the domain you're using to host these placeholders. For example, if it is `image-generator.test`:
+
+```bladehtml
+<div>
+    <h3>Item</h3>
+    <img src="https://image-generator.test/?size=400x400&background_color=333&text_color=FFF" alt="Placeholder">
+</div>
+```
 
 ## Notes
 
 If you do not supply a TrueType font path: 
 * you will be limited in font size options (1 through 5)
-*  you will not be able to render multiline text
+* you will not be able to render multiline text
 
 ## Tests
 
