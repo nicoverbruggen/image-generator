@@ -1,0 +1,52 @@
+name: run-tests
+
+on:
+    push:
+        paths:
+            - '**.php'
+            - '.github/workflows/run-tests.yml'
+            - 'phpunit.xml.dist'
+            - 'composer.json'
+            - 'composer.lock'
+
+jobs:
+    test:
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 5
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ubuntu-latest]
+                php: [8.3, 8.2, 8.1]
+                stability: [prefer-lowest, prefer-stable]
+
+        name: PHP ${{ matrix.php }} - ${{ matrix.stability }} - ${{ matrix.os }}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Install SQLite 3
+              run: |
+                sudo apt-get update
+                sudo apt-get install sqlite3
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                php-version: ${{ matrix.php }}
+                extensions: curl, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, iconv
+                coverage: none
+
+            - name: Install dependencies
+              run: |
+                  composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+
+            - name: List Installed Dependencies
+              run: composer show -D
+
+            - name: Execute tests
+              run: vendor/bin/phpunit tests
+
+
+
