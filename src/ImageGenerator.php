@@ -151,13 +151,4 @@ class ImageGenerator
         imagepng($imageResource, $path);
         return true;
     }
-
-    /**
-     * @deprecated: Use `generate` instead.
-     * @return bool
-     */
-    public function makePlaceholderImage($text = "", $path = null, $size = null, $bgHex = null, $fgHex = null): bool
-    {
-        return $this->generate($text, $path, $size, $bgHex, $fgHex);
-    }
 }
