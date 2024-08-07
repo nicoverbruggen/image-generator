@@ -29,6 +29,10 @@ If you do not supply a TrueType font path:
 * you will be limited in font size options (1 through 5)
 *  you will not be able to render multiline text
 
+## Tests
+
+    ./vendor/bin/phpunit tests
+
 ## Contributions
 
 I am not planning to expand the features of this package at this time. If you've made an improvement or fixed something, you are free to send me a pull request.
