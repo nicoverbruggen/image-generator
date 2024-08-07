@@ -111,8 +111,8 @@ class ImageGenerator
                 $imageResource,
                 $size,
                 0,
-                $x,
-                $y,
+                (int) $x,
+                (int) $y,
                 $allocatedFgColor,
                 $font,
                 $text
