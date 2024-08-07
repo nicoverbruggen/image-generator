@@ -1,6 +1,5 @@
 <?php
 
-
 namespace NicoVerbruggen\ImageGenerator;
 
 use NicoVerbruggen\ImageGenerator\Converters\HexConverter;
@@ -34,7 +33,7 @@ class ImageGenerator
      * If null, won't render any text.
      *
      * @param null|string $path: The path where the image needs to be stored.
-     * If null, will directly output the image to the buffer.
+     * If null will directly output the image stream to the buffer.
      *
      * @param null|string $size: The target size of the image that will be rendered.
      * For example: "100x100" is a valid size.
@@ -150,14 +149,5 @@ class ImageGenerator
 
         imagepng($imageResource, $path);
         return true;
-    }
-
-    /**
-     * @deprecated: Use `generate` instead.
-     * @return bool
-     */
-    public function makePlaceholderImage($text = "", $path = null, $size = null, $bgHex = null, $fgHex = null): bool
-    {
-        return $this->generate($text, $path, $size, $bgHex, $fgHex);
     }
 }
