@@ -1,6 +1,6 @@
 # Image Generator
 
-This package is intended to be used for quickly generating placeholder images with a specific size, color and text.
+This package is intended to be used for quickly generating placeholder images with a specific size, color and text. For more complex use cases, you may want to turn to something like [stil/gd-text](https://github.com/stil/gd-text).
 
 ## Requirements
 
