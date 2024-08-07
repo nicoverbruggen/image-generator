@@ -4,7 +4,7 @@ This package is intended to be used for quickly generating placeholder images wi
 
 ## Requirements
 
-* PHP 8.0 or higher
+* PHP 8.1 or higher
 * GD extension
     
 ## Usage
