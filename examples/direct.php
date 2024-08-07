@@ -11,8 +11,8 @@ $generator = new ImageGenerator(
     targetSize: "200x200",
     // Fun fact: if you set null for these, you'll get a random color for each generated placeholder!
     // You can also specify a specific hex color. ("#EEE" or "#EEEEEE" are both accepted)
-    textColorHex: null,
-    backgroundColorHex: "#AFF"
+    textColorHex: "#333",
+    backgroundColorHex: "#AFB"
 );
 
-$generator->makePlaceholderImage("");
+$generator->generate("");

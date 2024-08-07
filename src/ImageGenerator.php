@@ -34,7 +34,7 @@ class ImageGenerator
      * If null, won't render any text.
      *
      * @param null|string $path: The path where the image needs to be stored.
-     * If null, will directly output the image.
+     * If null, will directly output the image to the buffer.
      *
      * @param null|string $size: The target size of the image that will be rendered.
      * For example: "100x100" is a valid size.
@@ -141,15 +141,15 @@ class ImageGenerator
             );
         }
 
-        // Render image
-        if ($path == null) {
+        if ($path === null) {
+            ob_clean();
             header('Content-type: image/png');
             echo imagepng($imageResource, null);
             exit;
-        } else {
-            imagepng($imageResource, $path);
-            return true;
         }
+
+        imagepng($imageResource, $path);
+        return true;
     }
 
     /**
@@ -158,6 +158,6 @@ class ImageGenerator
      */
     public function makePlaceholderImage($text = "", $path = null, $size = null, $bgHex = null, $fgHex = null): bool
     {
-        return $this->makePlaceholderImage($text, $path, $size, $bgHex, $fgHex);
+        return $this->generate($text, $path, $size, $bgHex, $fgHex);
     }
 }
