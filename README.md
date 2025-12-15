@@ -66,14 +66,22 @@ You can also check out [the other source file](examples/direct.php). You can poi
 
 ### Server mode
 
-You can also point your PHP installation's webroot to the `server` directory, and generate images via URL. The `size` parameter is used to size the placeholder images.
+You can also point your PHP installation's webroot to the `server` directory, and generate images via URL. 
 
-You can then link to the domain you're using to host these placeholders. For example, if it is `image-generator.test`:
+- The `size` parameter is used to size the placeholder images. 
+- The `background_color` parameter is used to set the background color.
+- The `text_color` parameter is used to set the color of the text (of the dimensions).
+
+Please note that you should not use `#` in the URL for the hexadecimal notation for colors!
+
+You can then link to the domain you're using to host these placeholders. 
+
+For example, if it is `image-generator.test`:
 
 ```bladehtml
 <div>
     <h3>Item</h3>
-    <img src="https://image-generator.test/?size=400x400&background_color=333&text_color=FFF" alt="Placeholder">
+    <img src="https://image-generator.test/?size=500x500&background_color=005577&text_color=FFF" alt="Placeholder">
 </div>
 ```
 ## Notes
