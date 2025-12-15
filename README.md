@@ -90,7 +90,9 @@ In `ImageGenerator`, `makePlaceholderImage()` has been removed. You need to repl
 
 ### v3 to v4:
 
-In `ImageGenerator`, `generate()`'s `path` parameter has been replaced with `output`. It works the same way, but you have more options for this parameter now, in particular `base64` is now a valid value for that parameter.
+In `ImageGenerator`, `generate()`'s `path` parameter has been replaced with `output`. If you use named parameters, you will need to update your usage of this method.
+
+It works the same way, but you have more options for this parameter now, in particular `base64` is now a valid value for that parameter.
 
 ## Tests
 
