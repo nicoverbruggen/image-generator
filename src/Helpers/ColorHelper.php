@@ -24,14 +24,19 @@ class ColorHelper
      *
      * @return string
      */
-    public static function contrastColor($hex): string
+    public static function contrastColor(?string $hex): string
     {
-        if ($hex == null) {
+        if ($hex === null || $hex === '') {
             $hex = "#000000";
         }
 
         // Remove the # to avoid errors
         $hex = str_replace('#', '', $hex);
+
+        // Expand 3-char hex to 6-char (e.g., "FFF" -> "FFFFFF")
+        if (strlen($hex) === 3) {
+            $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+        }
 
         // hexColor RGB
         $R1 = hexdec(substr($hex, 0, 2));

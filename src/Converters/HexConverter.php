@@ -8,12 +8,8 @@ class HexConverter
      * Allocates a specific hex color for gd.
      * You must have allocated the resource beforehand.
      * Returns an int representing the desired color.
-     *
-     * @param $resource
-     * @param $hex
-     * @return false|int
      */
-    public static function allocate($resource, $hex): false|int
+    public static function allocate(\GdImage $resource, string $hex): false|int
     {
         $rgbArray = self::toRgbArray($hex);
         return imagecolorallocate($resource, $rgbArray['r'], $rgbArray['g'], $rgbArray['b']);
@@ -24,21 +20,18 @@ class HexConverter
      * This array can then be used if you need rgb values.
      *
      * Returns false if the hex cannot be converted (e.g. invalid length).
-     *
-     * @param $hex
-     * @return array|bool
      */
-    public static function toRgbArray($hex): array|bool
+    public static function toRgbArray(string $hex): array|false
     {
         $hex = preg_replace("/[^abcdef0-9]/i", "", $hex);
-        if (strlen($hex) == 6) {
+        if (strlen($hex) === 6) {
             list($r, $g, $b) = str_split($hex, 2);
             return [
                 "r" => hexdec($r),
                 "g" => hexdec($g),
                 "b" => hexdec($b),
             ];
-        } elseif (strlen($hex) == 3) {
+        } elseif (strlen($hex) === 3) {
             list($r, $g, $b) = array($hex[0] . $hex[0], $hex[1] . $hex[1], $hex[2] . $hex[2]);
             return [
                 "r" => hexdec($r),

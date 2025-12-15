@@ -72,11 +72,28 @@ class ImageGenerator
         // The target size is either the one set in the class or the override
         $targetSize = empty($size) ? $this->targetSize : $size;
 
-        // Extract the dimensions from the target size
-        $dimensions = explode('x', $targetSize);
+        // Validate and extract the dimensions from the target size
+        if (!preg_match('/^(\d+)x(\d+)$/', $targetSize, $matches)) {
+            throw new \InvalidArgumentException("Invalid size format: '{$targetSize}'. Expected format: 'WIDTHxHEIGHT' (e.g., '200x200').");
+        }
+
+        $width = (int) $matches[1];
+        $height = (int) $matches[2];
+
+        if ($width < 1 || $height < 1) {
+            throw new \InvalidArgumentException("Dimensions must be at least 1x1. Got: {$width}x{$height}.");
+        }
+
+        if ($width > 5000 || $height > 5000) {
+            throw new \InvalidArgumentException("Dimensions exceed maximum allowed size of 5000x5000. Got: {$width}x{$height}.");
+        }
 
         // Generate an image resource with GD
-        $imageResource = imagecreatetruecolor($dimensions[0], $dimensions[1]);
+        $imageResource = imagecreatetruecolor($width, $height);
+
+        if ($imageResource === false) {
+            throw new \RuntimeException("Failed to create image resource with dimensions {$width}x{$height}.");
+        }
 
         $bgHex = $bgHex ?? $this->backgroundColorHex;
         $fgHex = $fgHex ?? $this->textColorHex;
@@ -84,6 +101,14 @@ class ImageGenerator
         // Determine which background + foreground (text) color needs to be used
         $bgColor = ! empty($bgHex) ? $bgHex : ColorHelper::randomHex();
         $fgColor = ! empty($fgHex) ? $fgHex : ColorHelper::contrastColor($bgHex);
+
+        // Validate hex colors
+        if (HexConverter::toRgbArray($bgColor) === false) {
+            throw new \InvalidArgumentException("Invalid background color format: '{$bgColor}'. Expected hex format (e.g., '#FFF' or '#FFFFFF').");
+        }
+        if (HexConverter::toRgbArray($fgColor) === false) {
+            throw new \InvalidArgumentException("Invalid foreground color format: '{$fgColor}'. Expected hex format (e.g., '#FFF' or '#FFFFFF').");
+        }
 
         if ($text === "") {
             $text = $targetSize;
@@ -133,7 +158,7 @@ class ImageGenerator
     {
         $fontSize = $this->fallbackFontSize;
         $fontWidth = imagefontwidth($fontSize);
-        $fontHeight = imagefontwidth($fontSize);
+        $fontHeight = imagefontheight($fontSize);
         $length = strlen($text);
         $textWidth = $length * $fontWidth;
 
