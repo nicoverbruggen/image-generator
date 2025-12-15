@@ -76,27 +76,22 @@ class ImageGenerator
         $dimensions = explode('x', $targetSize);
 
         // Generate an image resource with GD
-        $imageResource = imagecreate($dimensions[0], $dimensions[1]);
+        $imageResource = imagecreatetruecolor($dimensions[0], $dimensions[1]);
 
-        if ($bgHex == null) {
-            $bgHex = $this->backgroundColorHex;
-        }
-        if ($fgHex == null) {
-            $fgHex = $this->textColorHex;
-        }
-
-        $randomColor = ColorHelper::randomHex();
+        $bgHex = $bgHex ?? $this->backgroundColorHex;
+        $fgHex = $fgHex ?? $this->textColorHex;
 
         // Determine which background + foreground (text) color needs to be used
-        $bgColor = ! empty($bgHex) ? $bgHex : $randomColor;
+        $bgColor = ! empty($bgHex) ? $bgHex : ColorHelper::randomHex();
         $fgColor = ! empty($fgHex) ? $fgHex : ColorHelper::contrastColor($bgHex);
 
         if ($text === "") {
             $text = $targetSize;
         }
 
-        // Merely allocating the color is enough for the background
-        HexConverter::allocate($imageResource, $bgColor);
+        // Allocate a color for the background and fill the image
+        $allocatedBgColor = HexConverter::allocate($imageResource, $bgColor);
+        imagefill($imageResource, 0, 0, $allocatedBgColor);
 
         // We'll need to use the foreground color later, so assign it to a variable
         $allocatedFgColor = HexConverter::allocate($imageResource, $fgColor);
@@ -107,21 +102,25 @@ class ImageGenerator
             $this->generateFallbackImage($text, $imageResource, $allocatedFgColor);
         }
 
+        // Render image with name based on the target size
         if ($output === null) {
             ob_clean();
+            $filename = !empty($text)
+                ? preg_replace('/[^a-z0-9]/i', '_', $text) . '-' . $targetSize
+                : $targetSize;
             header('Content-type: image/png');
+            header('Content-Disposition: inline; filename="'. $filename .'.png"');
             echo imagepng($imageResource);
             exit;
         } else if ($output === 'base64') {
             ob_start();
-            imagepng($imageResource, null);
+            imagepng($imageResource);
             $data = ob_get_contents();
             ob_end_clean();
             return 'data:image/png;base64,' . base64_encode($data);
         }
 
         $path = $output;
-
         imagepng($imageResource, $path);
         return true;
     }
