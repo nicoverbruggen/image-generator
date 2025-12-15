@@ -90,7 +90,7 @@ class ImageGeneratorTest extends TestCase
     {
         $generator = new ImageGenerator(targetSize: "100x100");
 
-        // Empty string should render the size as text
+        // Empty string should render the image dimensions as text
         $result = $generator->generate(text: "", output: 'base64');
 
         $this->assertIsString($result);
@@ -105,9 +105,8 @@ class ImageGeneratorTest extends TestCase
         );
 
         // Should reset to 3 and work fine
-        $result = $generator->generate(output: 'base64');
-
-        $this->assertIsString($result);
+        $this->assertEquals(3, $generator->fallbackFontSize);
+        $this->assertIsString($generator->generate(output: 'base64'));
     }
 
     public function testFallbackFontSizeZeroResetsToDefault(): void
@@ -118,7 +117,6 @@ class ImageGeneratorTest extends TestCase
         );
 
         $result = $generator->generate(output: 'base64');
-
         $this->assertIsString($result);
     }
 
@@ -130,7 +128,6 @@ class ImageGeneratorTest extends TestCase
         );
 
         $result = $generator->generate(output: 'base64');
-
         $this->assertIsString($result);
     }
 
@@ -143,7 +140,6 @@ class ImageGeneratorTest extends TestCase
             );
 
             $result = $generator->generate(output: 'base64');
-
             $this->assertIsString($result, "Failed for font size {$size}");
         }
     }
@@ -157,7 +153,6 @@ class ImageGeneratorTest extends TestCase
         // Extract the base64 part
         $base64Data = str_replace('data:image/png;base64,', '', $output);
         $decodedData = base64_decode($base64Data, true);
-
         $this->assertNotFalse($decodedData);
 
         // Verify it's a valid PNG by checking magic bytes
@@ -169,7 +164,6 @@ class ImageGeneratorTest extends TestCase
         $generator = new ImageGenerator(targetSize: "50x50");
 
         $result = $generator->generate(output: $this->outputPath);
-
         $this->assertTrue($result);
     }
 
@@ -313,7 +307,7 @@ class ImageGeneratorTest extends TestCase
     {
         $generator = new ImageGenerator(targetSize: "200x100");
 
-        // Built-in fonts may not render all unicode, but shouldn't crash
+        // Built-in fonts may not render all Unicode, but shouldn't crash
         $result = $generator->generate(text: "Héllo", output: 'base64');
 
         $this->assertIsString($result);
