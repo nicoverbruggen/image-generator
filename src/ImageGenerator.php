@@ -150,7 +150,7 @@ class ImageGenerator
         $allocatedFgColor = HexConverter::allocate($imageResource, $fgColor);
 
         if ($this->fontPath !== null && file_exists($this->fontPath)) {
-            $this->generateTrueTypeImage($size, $text, $imageResource, $allocatedFgColor);
+            $this->generateTrueTypeImage($text, $size, $imageResource, $allocatedFgColor);
         } else {
             $this->generateFallbackImage($text, $imageResource, $allocatedFgColor);
         }

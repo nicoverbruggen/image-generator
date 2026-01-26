@@ -325,6 +325,23 @@ class ImageGeneratorTest extends TestCase
         $this->assertEquals(5, $generator->fallbackFontSize);
     }
 
+    public function testTrueTypeFontRendering(): void
+    {
+        $fontPath = __DIR__ . '/fixtures/font.ttf';
+        $this->assertFileExists($fontPath, "Font file must exist for this test.");
+
+        $generator = new ImageGenerator(
+            targetSize: "200x200",
+            fontPath: $fontPath,
+            fontSize: 20
+        );
+
+        $result = $generator->generate(text: "TTF Test", output: 'base64');
+
+        $this->assertIsString($result);
+        $this->assertStringStartsWith('data:image/png;base64', $result);
+    }
+
     public function testInvalidSizeInConstructor(): void
     {
         $generator = new ImageGenerator(targetSize: "invalid");
