@@ -1,0 +1,4 @@
+/tests/fixtures export-ignore
+/examples export-ignore
+/doc export-ignore
+/.gitattributes export-ignore
