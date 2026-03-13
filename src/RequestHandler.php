@@ -16,7 +16,9 @@ class RequestHandler
     private function parseParams(array $params): void
     {
         if (array_key_exists('size', $params)) {
-            $this->size = $params['size'];
+            if (preg_match('/^\d+x\d+$/', $params['size'])) {
+                $this->size = $params['size'];
+            }
         }
 
         if (array_key_exists('text_color', $params)) {
