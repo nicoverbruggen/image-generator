@@ -33,7 +33,7 @@ use NicoVerbruggen\ImageGenerator\ImageGenerator;
 
 ### Generate `base64` encoded images inline
 
-In addition to saving placeholder images to 
+In addition to saving placeholder images to a particular location, you can also output a base64 encoded string:
 
 ```php
 use NicoVerbruggen\ImageGenerator\ImageGenerator;
