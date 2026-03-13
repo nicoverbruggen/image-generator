@@ -23,6 +23,35 @@ Please note that for testing purposes, I used Roboto Black as the TrueType font.
 
 Here's a few examples of what you can do with this package:
 
+### Fluent API
+
+The easiest way to generate images is with the fluent API:
+
+```php
+use NicoVerbruggen\ImageGenerator\ImageGenerator;
+
+// Generate a simple placeholder
+ImageGenerator::text("Hello!")
+    ->width(200)
+    ->backgroundColor("#FFF")
+    ->foregroundColor("#333")
+    ->toPng("/path/to/image.png");
+
+// Only setting width generates a square; use size() for rectangles
+ImageGenerator::text("Banner")
+    ->size(400, 100)
+    ->backgroundColor("#005577")
+    ->foregroundColor("#FFF")
+    ->toBase64();
+
+// Use a TrueType font with custom line height
+ImageGenerator::text("My\nname\nis\nBond.")
+    ->width(200)
+    ->font("/path/to/font.ttf", 20)
+    ->lineHeight(1.6)
+    ->toPng("/path/to/image.png");
+```
+
 ### Save images to a path
 
 ```php

@@ -47,6 +47,11 @@ class ImageGenerator
         }
     }
 
+    public static function text(string $text): FluentImageGenerator
+    {
+        return new FluentImageGenerator($text);
+    }
+
     /**
      * Generates an image; directly renders or saves a placeholder image
      * with the given text. The generated image will always be a PNG.
