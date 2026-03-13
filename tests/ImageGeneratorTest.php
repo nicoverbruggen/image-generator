@@ -342,6 +342,65 @@ class ImageGeneratorTest extends TestCase
         $this->assertStringStartsWith('data:image/png;base64', $result);
     }
 
+    public function testTrueTypeIdenticalGeneratorsProduceIdenticalImages(): void
+    {
+        $fontPath = __DIR__ . '/fixtures/fonts/Readerly.ttf';
+        $this->assertFileExists($fontPath, "Font file must exist for this test.");
+
+        $generatorA = new ImageGenerator(
+            targetSize: "200x200",
+            textColorHex: "#333",
+            backgroundColorHex: "#EEE",
+            fontPath: $fontPath,
+            fontSize: 20
+        );
+
+        $generatorB = new ImageGenerator(
+            targetSize: "200x200",
+            textColorHex: "#333",
+            backgroundColorHex: "#EEE",
+            fontPath: $fontPath,
+            fontSize: 20
+        );
+
+        $text = "Line1\nLine2\nLine3";
+
+        $resultA = $generatorA->generate(text: $text, output: 'base64');
+        $resultB = $generatorB->generate(text: $text, output: 'base64');
+
+        $this->assertEquals($resultA, $resultB, "Identical generators should produce identical images.");
+    }
+
+    public function testTrueTypeCustomLineHeight(): void
+    {
+        $fontPath = __DIR__ . '/fixtures/fonts/Readerly.ttf';
+        $this->assertFileExists($fontPath, "Font file must exist for this test.");
+
+        $defaultGenerator = new ImageGenerator(
+            targetSize: "200x200",
+            textColorHex: "#333",
+            backgroundColorHex: "#EEE",
+            fontPath: $fontPath,
+            fontSize: 20
+        );
+
+        $spacedGenerator = new ImageGenerator(
+            targetSize: "200x200",
+            textColorHex: "#333",
+            backgroundColorHex: "#EEE",
+            fontPath: $fontPath,
+            fontSize: 20,
+            lineHeight: 2.5
+        );
+
+        $text = "Line1\nLine2\nLine3";
+
+        $defaultResult = $defaultGenerator->generate(text: $text, output: 'base64');
+        $spacedResult = $spacedGenerator->generate(text: $text, output: 'base64');
+
+        $this->assertNotEquals($defaultResult, $spacedResult, "Different line heights should produce different images.");
+    }
+
     public function testInvalidSizeInConstructor(): void
     {
         $generator = new ImageGenerator(targetSize: "invalid");
