@@ -6,118 +6,116 @@ This package is intended to be used for quickly generating placeholder images wi
 
 * PHP 8.1 or higher
 * GD extension
-    
-## Usage
+* TrueType font files (.tff, optional)
 
-Make sure you require this package in your composer.json:
+## Sample images
 
-    composer require nicoverbruggen/image-generator
-
-See [the example source file](examples/saved.php) that is used to generate and save the sample images. You can generate the following examples:
+See [the example source files](examples/) to generate the sample images below.
 
 ![The barebones example](doc/examples/barebones.png)
 ![A multiline example](doc/examples/multiline.png)
 ![An avatar](doc/examples/avatar.png)
 
-Please note that for testing purposes, I used Roboto Black as the TrueType font. (This font is not included in this repository.)
+## Installation
 
-Here's a few examples of what you can do with this package:
+    composer require nicoverbruggen/image-generator
 
-### Fluent API
+## Usage
 
-The easiest way to generate images is with the fluent API:
+I highly recommend using the easy **fluent API**. The [classic API](doc/classic.md) is also still fully supported but less easy to use.
+
+### Save to a file
 
 ```php
 use NicoVerbruggen\ImageGenerator\ImageGenerator;
 
-// Generate a simple placeholder
 ImageGenerator::text("Hello!")
     ->width(200)
-    ->backgroundColor("#FFF")
+    ->backgroundColor("#EEE")
     ->foregroundColor("#333")
-    ->toPng("/path/to/image.png");
+    ->toPng(__DIR__ . "/placeholder.png");
+```
 
-// Only setting width generates a square; use size() for rectangles
+### Generate a `base64` image
+
+```php
+use NicoVerbruggen\ImageGenerator\ImageGenerator;
+
+$src = ImageGenerator::text("Hello!")
+    ->width(200)
+    ->toBase64();
+
+echo "<img src='{$src}' alt='Placeholder image'>";
+```
+
+### Rectangles
+
+Setting only `width` generates a square. Use `size()` or `height()` for rectangles:
+
+```php
+use NicoVerbruggen\ImageGenerator\ImageGenerator;
+
 ImageGenerator::text("Banner")
     ->size(400, 100)
     ->backgroundColor("#005577")
     ->foregroundColor("#FFF")
-    ->toBase64();
+    ->toPng(__DIR__ . "/banner.png");
+```
 
-// Use a TrueType font with custom line height
+### TrueType fonts and multiline text
+
+```php
+use NicoVerbruggen\ImageGenerator\ImageGenerator;
+
 ImageGenerator::text("My\nname\nis\nBond.")
     ->width(200)
     ->font("/path/to/font.ttf", 20)
     ->lineHeight(1.6)
-    ->toPng("/path/to/image.png");
+    ->toPng(__DIR__ . "/multiline.png");
 ```
 
-### Save images to a path
+### Using in Blade templates
+
+First, you may want to set up a helper that you can call with whatever templating language you wish to use. My example here uses Blade, but the package is framework agnostic.
 
 ```php
 use NicoVerbruggen\ImageGenerator\ImageGenerator;
 
-(new ImageGenerator())->generate(output: __DIR__ . "/image_example.png", size: '200x200');
-```
-
-### Generate `base64` encoded images inline
-
-In addition to saving placeholder images to 
-
-```php
-use NicoVerbruggen\ImageGenerator\ImageGenerator;
-
-$output = (new ImageGenerator())->generate(output: 'base64', size: '200x200');
-
-echo "<img src='{$output}' alt='Placeholder image'>";
-```
-
-A useful use case may be achieved after declare your own helper, like so:
-
-```php
-function placeholder_image(string $size = '500x500'): string {
-    return (new ImageGenerator())->generate(output: 'base64', size: $size);
+function placeholder(int $size = 500): string {
+    return ImageGenerator::text("{$size}x{$size}")
+        ->width($size)
+        ->toBase64();
 }
 ```
 
-This use case can be useful when used in combination with frameworks like Laravel or Symfony:
+It should be really easy to use in a view, like this:
 
-```bladehtml
+```html
 <div>
     <h3>Item</h3>
-    <img src="{{ placeholder_image('200x200') }}" alt="Placeholder">
+    <img src="{{ placeholder(200) }}" alt="Placeholder">
 </div>
 ```
 
-### Directly output images
+## Server mode
 
-You can also check out [the other source file](examples/direct.php). You can point your browser directly at this file (assuming you're running a PHP server, of course) and it will directly return a file since the path is set to `null`.
+Also included in this package is a **server mode**. You can point your site's webroot to the `server` directory, and generate images on the fly via a dedicated URL.
 
-### Server mode
+The following `GET` parameters are supported:
 
-You can also point your PHP installation's webroot to the `server` directory, and generate images via URL. 
+- `size` — the dimensions of the placeholder image
+- `background_color` — the background color (hex, without `#`)
+- `text_color` — the text color (hex, without `#`)
 
-- The `size` parameter is used to size the placeholder images. 
-- The `background_color` parameter is used to set the background color.
-- The `text_color` parameter is used to set the color of the text (of the dimensions).
-
-Please note that you should not use `#` in the URL for the hexadecimal notation for colors!
-
-You can then link to the domain you're using to host these placeholders. 
-
-For example, if it is `image-generator.test`:
+You can then use that other domain to serve images dynamically:
 
 ```bladehtml
-<div>
-    <h3>Item</h3>
-    <img src="https://image-generator.test/?size=500x500&background_color=005577&text_color=FFF" alt="Placeholder">
-</div>
+<img src="https://image-generator.test/?size=500x500&background_color=005577&text_color=FFF" alt="Placeholder">
 ```
+
 ## Notes
 
-If you do not supply a TrueType font path:
-* you will be limited in font size options (1 through 5)
-* you will not be able to render multiline text
+If you do not supply a TrueType font path you will be limited in font size options (1 through 5) and you will not be able to render multiline text. Therefore, I always recommend using a custom TrueType font.
 
 ## Upgrade guide
 
@@ -141,6 +139,6 @@ I am not planning to expand the features of this package at this time. If you've
 
 ## License
 
-MIT. 
+MIT.
 
 See also: [LICENSE](LICENSE).
