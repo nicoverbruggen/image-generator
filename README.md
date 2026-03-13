@@ -131,7 +131,7 @@ It works the same way, but you have more options for this parameter now, in part
 
 ## Tests
 
-    ./vendor/bin/phpunit tests
+    composer test
 
 ## Contributions
 
