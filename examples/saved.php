@@ -37,7 +37,7 @@ $generator = new ImageGenerator(
     textColorHex: null,
     backgroundColorHex: null,
     // Let's point to a font. If it can't be found, it'll use a fallback (built-in to GD)
-    fontPath: "/System/Library/Fonts/Supplemental/Arial.ttf",
+    fontPath: "../tests/fixtures/fonts/Readerly.ttf",
     fontSize: 20
 );
 
@@ -49,7 +49,7 @@ $generator->generate(
 
 // Generate a makePlaceholderImage image, for example for an avatar with initials
 // We'll increase the font size first!
-$generator->fontSize = 90;
+$generator->fontSize = 80;
 $generator->generate(
     text: "NV",
     output: __DIR__ . "/image_example_avatar.png"
