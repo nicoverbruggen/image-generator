@@ -31,8 +31,8 @@ class ImageGenerator
      */
     public function __construct(
         public string $targetSize = "200x200",
-        public string $textColorHex = "#333",
-        public string $backgroundColorHex = "#EEE",
+        public ?string $textColorHex = "#333",
+        public ?string $backgroundColorHex = "#EEE",
         public string|null $fontPath = null,
         public int $fontSize = 12,
         public int $fallbackFontSize = 5
@@ -228,15 +228,16 @@ class ImageGenerator
         // just how wide and high the text box is!
         $xMax = max([$textBox[0], $textBox[2], $textBox[4], $textBox[6]]);
         $xMin = min([$textBox[0], $textBox[2], $textBox[4], $textBox[6]]);
-        $textWidth = abs($xMax) - abs($xMin);
+        $textWidth = $xMax - $xMin;
 
         $yMax = max([$textBox[1], $textBox[3], $textBox[5], $textBox[7]]);
         $yMin = min([$textBox[1], $textBox[3], $textBox[5], $textBox[7]]);
-        $textHeight = abs($yMax) - abs($yMin);
+        $textHeight = $yMax - $yMin;
 
         // Calculate coordinates of the text
-        $x = ((imagesx($imageResource) / 2) - ($textWidth / 2));
-        $y = ((imagesy($imageResource) / 2) - ($textHeight / 2));
+        // Offset by -$xMin and -$yMin because imagettftext positions relative to the baseline
+        $x = ((imagesx($imageResource) / 2) - ($textWidth / 2)) - $xMin;
+        $y = ((imagesy($imageResource) / 2) - ($textHeight / 2)) - $yMin;
 
         imagettftext(
             $imageResource,
