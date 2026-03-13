@@ -12,6 +12,9 @@ class HexConverter
     public static function allocate(\GdImage $resource, string $hex): false|int
     {
         $rgbArray = self::toRgbArray($hex);
+        if ($rgbArray === false) {
+            return false;
+        }
         return imagecolorallocate($resource, $rgbArray['r'], $rgbArray['g'], $rgbArray['b']);
     }
 
