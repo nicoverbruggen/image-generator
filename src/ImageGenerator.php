@@ -163,7 +163,7 @@ class ImageGenerator
                 : $targetSize;
             header('Content-type: image/png');
             header('Content-Disposition: inline; filename="'. $filename .'.png"');
-            echo imagepng($imageResource);
+            imagepng($imageResource);
             exit;
         } else if ($output === 'base64') {
             ob_start();
@@ -174,7 +174,9 @@ class ImageGenerator
         }
 
         $path = $output;
-        imagepng($imageResource, $path);
+        if (!imagepng($imageResource, $path)) {
+            throw new \RuntimeException("Failed to save image to path: {$path}");
+        }
         return true;
     }
 
@@ -206,8 +208,8 @@ class ImageGenerator
     }
 
     /**
-     * @param int $size
      * @param string $text
+     * @param int|null $size
      * @param \GdImage $imageResource
      * @param int $allocatedFgColor
      * @return void
