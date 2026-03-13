@@ -38,7 +38,9 @@ $generator = new ImageGenerator(
     backgroundColorHex: null,
     // Let's point to a font. If it can't be found, it'll use a fallback (built-in to GD)
     fontPath: "../tests/fixtures/fonts/Readerly.ttf",
-    fontSize: 20
+    fontSize: 20,
+    // Finally, let's also set a line height, which is used for multline strings (default is 1.4)
+    lineHeight: 1.6,
 );
 
 // We'll do a multiline message here

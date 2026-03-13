@@ -28,6 +28,10 @@ class ImageGenerator
      *
      * @param int $fallbackFontSize Can be 1, 2, 3, 4, 5 for built-in fonts in latin2 encoding.
      * Higher numbers correspond to larger fonts. If the size is invalid, it will be reset to 3.
+     *
+     * @param float $lineHeight Line height multiplier for TrueType multiline text.
+     * Applied to the font size to determine spacing between lines. 
+     * Defaults to 1.4 (matches GD's default spacing).
      */
     public function __construct(
         public string $targetSize = "200x200",
@@ -35,7 +39,8 @@ class ImageGenerator
         public ?string $backgroundColorHex = "#EEE",
         public string|null $fontPath = null,
         public int $fontSize = 12,
-        public int $fallbackFontSize = 5
+        public int $fallbackFontSize = 5,
+        public float $lineHeight = 1.4
     ) {
         if ($this->fallbackFontSize < 1 || $this->fallbackFontSize > 5) {
             $this->fallbackFontSize = 3;
@@ -221,33 +226,49 @@ class ImageGenerator
         // Fallback to the generator's font size if not set explicitly
         $size = $size ?? $this->fontSize;
 
-        // Get the bounding box size
-        $textBox = imagettfbbox($size, 0, $font, $text);
+        $lines = explode("\n", $text);
+        $lineStep = $size * $this->lineHeight;
 
-        // Find the outer X and Y values (min and max) and use them to calculate
-        // just how wide and high the text box is!
-        $xMax = max([$textBox[0], $textBox[2], $textBox[4], $textBox[6]]);
-        $xMin = min([$textBox[0], $textBox[2], $textBox[4], $textBox[6]]);
-        $textWidth = $xMax - $xMin;
+        // Measure each line to find the widest and calculate total block height
+        $lineMetrics = [];
+        $maxWidth = 0;
 
-        $yMax = max([$textBox[1], $textBox[3], $textBox[5], $textBox[7]]);
-        $yMin = min([$textBox[1], $textBox[3], $textBox[5], $textBox[7]]);
-        $textHeight = $yMax - $yMin;
+        foreach ($lines as $line) {
+            $textBox = imagettfbbox($size, 0, $font, $line);
+            $xMax = max([$textBox[0], $textBox[2], $textBox[4], $textBox[6]]);
+            $xMin = min([$textBox[0], $textBox[2], $textBox[4], $textBox[6]]);
+            $yMin = min([$textBox[1], $textBox[3], $textBox[5], $textBox[7]]);
+            $width = $xMax - $xMin;
+            $maxWidth = max($maxWidth, $width);
+            $lineMetrics[] = ['xMin' => $xMin, 'yMin' => $yMin, 'width' => $width];
+        }
 
-        // Calculate coordinates of the text
-        // Offset by -$xMin and -$yMin because imagettftext positions relative to the baseline
-        $x = ((imagesx($imageResource) / 2) - ($textWidth / 2)) - $xMin;
-        $y = ((imagesy($imageResource) / 2) - ($textHeight / 2)) - $yMin;
+        // Total height: first line's actual height + remaining lines spaced by lineStep
+        $totalHeight = (count($lines) - 1) * $lineStep;
+        $firstBox = imagettfbbox($size, 0, $font, $lines[0]);
+        $firstYMin = min([$firstBox[1], $firstBox[3], $firstBox[5], $firstBox[7]]);
+        $firstYMax = max([$firstBox[1], $firstBox[3], $firstBox[5], $firstBox[7]]);
+        $totalHeight += $firstYMax - $firstYMin;
 
-        imagettftext(
-            $imageResource,
-            $size,
-            0,
-            (int)$x,
-            (int)$y,
-            $allocatedFgColor,
-            $font,
-            $text
-        );
+        // Starting Y: center the block vertically, offset by -firstYMin for baseline
+        $startY = ((imagesy($imageResource) / 2) - ($totalHeight / 2)) - $firstYMin;
+
+        foreach ($lines as $i => $line) {
+            $metrics = $lineMetrics[$i];
+            // Center each line horizontally
+            $x = ((imagesx($imageResource) / 2) - ($metrics['width'] / 2)) - $metrics['xMin'];
+            $y = $startY + ($i * $lineStep);
+
+            imagettftext(
+                $imageResource,
+                $size,
+                0,
+                (int)$x,
+                (int)$y,
+                $allocatedFgColor,
+                $font,
+                $line
+            );
+        }
     }
 }
