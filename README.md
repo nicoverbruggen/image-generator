@@ -50,13 +50,11 @@ echo "<img src='{$src}' alt='Placeholder image'>";
 
 ### Rectangles
 
-Setting only `width` generates a square. Use `size()` or `height()` for rectangles:
-
 ```php
 use NicoVerbruggen\ImageGenerator\ImageGenerator;
 
 ImageGenerator::text("Banner")
-    ->size(400, 100)
+    ->size(width: 400, height: 100)
     ->backgroundColor("#005577")
     ->foregroundColor("#FFF")
     ->toPng(__DIR__ . "/banner.png");
