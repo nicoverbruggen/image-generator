@@ -24,18 +24,13 @@ jobs:
 
         steps:
             - name: Checkout code
-              uses: actions/checkout@v4
-
-            - name: Install SQLite 3
-              run: |
-                sudo apt-get update
-                sudo apt-get install sqlite3
+              uses: actions/checkout@v5
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
                 php-version: ${{ matrix.php }}
-                extensions: curl, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, iconv
+                extensions: gd, fileinfo
                 coverage: none
 
             - name: Install dependencies
